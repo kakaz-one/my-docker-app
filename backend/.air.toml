@@ -1,0 +1,10 @@
+[build]
+  bin = "./tmp/main"
+  cmd = "go build -o ./tmp/main ."
+  delay = 1000
+  exclude_dir = ["tmp", "vendor"]
+  include_ext = ["go"]
+  log = "build-errors.log"
+
+[misc]
+  clean_on_exit = true
