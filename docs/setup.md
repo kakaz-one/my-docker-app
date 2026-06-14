@@ -2,26 +2,21 @@
 
 ## 起動手順
 
-### 1. 初回のみ: フロントエンドの初期化
-
-```bash
-docker compose build frontend
-docker compose run --rm frontend sh -c "npm create vite@latest . -- --template react-ts"
-```
-
-### 2. 全サービスの起動
+### 1. 全サービスの起動
 
 ```bash
 docker compose up --build
 ```
 
-初回以降は `--build` なしでも起動できます。
+初回はイメージのビルド（`npm ci` を含む）が走るため数分かかります。
+
+2回目以降はキャッシュが使われるため高速に起動します。
 
 ```bash
 docker compose up
 ```
 
-### 3. 停止
+### 2. 停止
 
 ```bash
 # Ctrl+C で止めてから
@@ -32,6 +27,17 @@ DBのデータも含めて全て削除したい場合:
 
 ```bash
 docker compose down -v
+```
+
+---
+
+## package.json を変更したとき
+
+`npm ci` はビルド時に実行されるため、パッケージを追加・変更した場合は古い `node_modules` を削除してから再ビルドが必要です。
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 
 ---

@@ -15,7 +15,7 @@ React + Go + PostgreSQL の構成で動く Docker 開発環境のサンプルで
 git clone https://github.com/kakaz-one/my-docker-app.git
 cd my-docker-app
 
-# 2. 起動（初回はビルドに数分かかります）
+# 2. 起動（初回はイメージのビルドが走るため数分かかります）
 docker compose up --build
 ```
 
