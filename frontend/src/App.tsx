@@ -1,121 +1,107 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useState, useEffect } from 'react'
 import './App.css'
 
+type Status = 'checking' | 'ok' | 'error'
+
+interface StatusCardProps {
+  label: string
+  status: Status
+  detail: string
+}
+
+function StatusCard({ label, status, detail }: StatusCardProps) {
+  return (
+    <div className={`status-card status-${status}`}>
+      <span className="status-dot" />
+      <div className="status-info">
+        <span className="status-label">{label}</span>
+        <span className="status-detail">{detail}</span>
+      </div>
+      <span className="status-badge">
+        {status === 'checking' ? '確認中…' : status === 'ok' ? '正常' : 'エラー'}
+      </span>
+    </div>
+  )
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [apiStatus, setApiStatus] = useState<Status>('checking')
+  const [healthStatus, setHealthStatus] = useState<Status>('checking')
+  const [apiMessage, setApiMessage] = useState('')
+
+  useEffect(() => {
+    const base = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
+
+    fetch(`${base}/api/hello`)
+      .then(r => r.json())
+      .then(data => {
+        setApiStatus('ok')
+        setApiMessage(data.message)
+      })
+      .catch(() => setApiStatus('error'))
+
+    fetch(`${base}/health`)
+      .then(r => r.json())
+      .then(() => setHealthStatus('ok'))
+      .catch(() => setHealthStatus('error'))
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="page">
+      <header className="hero">
+        <div className="hero-inner">
+          <h1>my-docker-app</h1>
+          <p>React + Go + PostgreSQL による Docker 開発環境サンプル</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="content">
+        <section className="section">
+          <h2>サービス稼働状況</h2>
+          <div className="card-list">
+            <StatusCard
+              label="フロントエンド"
+              status="ok"
+              detail="React 19 + Vite"
+            />
+            <StatusCard
+              label="バックエンド API"
+              status={apiStatus}
+              detail={apiStatus === 'ok' ? apiMessage : 'Go + air'}
+            />
+            <StatusCard
+              label="ヘルスチェック"
+              status={healthStatus}
+              detail="GET /health"
+            />
+          </div>
+        </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <section className="section">
+          <h2>技術スタック</h2>
+          <div className="stack-list">
+            {[
+              { name: 'React', color: '#61dafb' },
+              { name: 'TypeScript', color: '#3178c6' },
+              { name: 'Vite', color: '#646cff' },
+              { name: 'Go', color: '#00add8' },
+              { name: 'PostgreSQL', color: '#336791' },
+              { name: 'Docker', color: '#2496ed' },
+            ].map(({ name, color }) => (
+              <span key={name} className="badge" style={{ '--badge-color': color } as React.CSSProperties}>
+                {name}
+              </span>
+            ))}
+          </div>
+        </section>
+      </main>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <footer className="footer">
+        <a href="https://github.com/kakaz-one/my-docker-app" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </footer>
+    </div>
   )
 }
 
