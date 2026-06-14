@@ -86,6 +86,47 @@ docker compose up --build
 
 ---
 
+## DB操作
+
+### psql に接続する
+
+```bash
+docker compose exec db psql -U postgres -d myapp
+```
+
+接続後に使えるコマンド：
+
+| コマンド | 説明 |
+|---|---|
+| `\dt` | テーブル一覧を表示 |
+| `\d messages` | messages テーブルの定義を表示 |
+| `\q` | psql を終了 |
+
+### よく使うSQL（1行で実行）
+
+```bash
+# データを全件取得
+docker compose exec db psql -U postgres -d myapp -c "SELECT * FROM messages;"
+
+# データをリセット（全件削除してシードデータを再投入）
+docker compose exec db psql -U postgres -d myapp -c "DELETE FROM messages;"
+docker compose restart backend
+
+# 件数を確認
+docker compose exec db psql -U postgres -d myapp -c "SELECT COUNT(*) FROM messages;"
+```
+
+### DBのデータをまとめてリセットする
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+`-v` を付けると `postgres_data` volume が削除され、次回起動時にシードデータが再投入されます。
+
+---
+
 ## DB接続情報
 
 | 項目 | 値 |
