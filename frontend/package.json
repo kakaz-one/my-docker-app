@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "node -e \"if (!process.env.DOCKER_BUILD) { console.error('\\nError: npm install はDockerコンテナ内で実行してください\\n  docker compose exec frontend npm install <パッケージ名>\\n'); process.exit(1); }\"",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

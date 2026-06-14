@@ -31,6 +31,23 @@ docker compose down -v
 
 ---
 
+## パッケージの追加（フロントエンド）
+
+`npm install` はローカルでは実行できません。必ずコンテナ内で実行してください。
+
+```bash
+docker compose exec frontend npm install <パッケージ名>
+```
+
+コンテナが起動していない場合は先に起動してください。
+
+```bash
+docker compose up -d
+docker compose exec frontend npm install <パッケージ名>
+```
+
+---
+
 ## package.json を変更したとき
 
 `npm ci` はビルド時に実行されるため、パッケージを追加・変更した場合は古い `node_modules` を削除してから再ビルドが必要です。

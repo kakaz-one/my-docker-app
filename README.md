@@ -45,3 +45,13 @@ docker compose down
 | db | PostgreSQL 16 | 5432 |
 
 詳しいセットアップ手順は [docs/setup.md](docs/setup.md) を参照してください。
+
+---
+
+## パッケージの追加（フロントエンド）
+
+`npm install` はローカルでは実行できません。必ずコンテナ内で実行してください。
+
+```bash
+docker compose exec frontend npm install <パッケージ名>
+```
