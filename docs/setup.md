@@ -48,6 +48,12 @@ docker compose exec frontend npm install <パッケージ名>
 
 ---
 
+## IDE（VS Code）で TypeScript のエラーが出るとき
+
+`node_modules` は Docker コンテナ内にしか存在しないため、VS Code がモジュールを見つけられずエラーを表示することがあります。これはアプリの動作には影響しません。`docker compose up` でコンテナを起動してブラウザで確認することができます。
+
+---
+
 ## package.json を変更したとき
 
 `npm ci` はビルド時に実行されるため、パッケージを追加・変更した場合は古い `node_modules` を削除してから再ビルドが必要です。

@@ -55,3 +55,9 @@ docker compose down
 ```bash
 docker compose exec frontend npm install <パッケージ名>
 ```
+
+---
+
+## IDE（VS Code）で TypeScript のエラーが出るとき
+
+`node_modules` は Docker コンテナ内にしか存在しないため、VS Code がモジュールを見つけられずエラーを表示することがあります。これはアプリの動作には影響しません。`docker compose up` でコンテナを起動してブラウザで確認することができます。
