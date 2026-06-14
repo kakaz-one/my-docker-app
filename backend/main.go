@@ -83,13 +83,18 @@ func initDB() error {
 		"named volumeでDBのデータが永続化される",
 		"コンテナ同士はサービス名でお互いに通信できる",
 		"Goのホットリロードにairを使っています",
+		"Dockerfileのマルチステージビルドでイメージを軽量化できる",
+		".envファイルで環境変数を管理するのがベストプラクティス",
+		"ヘルスチェックでコンテナの状態を監視できる",
+		"volumeマウントで開発中のコードをリアルタイムに反映できる",
+		"PostgreSQLのデータはnamed volumeに永続化されている",
 	}
 	for _, s := range seeds {
 		if _, err := db.Exec("INSERT INTO messages (content) VALUES ($1)", s); err != nil {
 			return err
 		}
 	}
-	log.Println("シードデータを5件挿入しました")
+	log.Println("シードデータを10件挿入しました")
 	return nil
 }
 
@@ -99,8 +104,24 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT id, content, created_at FROM messages ORDER BY id ASC LIMIT 10")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	messages := []Message{}
+	for rows.Next() {
+		var m Message
+		if err := rows.Scan(&m.ID, &m.Content, &m.CreatedAt); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		messages = append(messages, m)
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "Hello from Go!"})
+	json.NewEncoder(w).Encode(messages)
 }
 
 func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
